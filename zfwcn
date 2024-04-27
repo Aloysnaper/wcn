@@ -1,0 +1,24 @@
+clc;
+clear all;
+close all;
+x=randi([0 1],1,10^4);
+h=randn+(1i*randn);
+m=pskmod(x,2);
+ber1=[];
+ber2=[];
+snr=0:1:35;
+for i=1:length(snr)
+    N=awgn(m*h,snr(i),"measured");
+    I=N.*inv(h);
+    with_eq=pskdemod(I,2);
+    wo_eq=pskdemod(N,2);
+    % ber1=[ber1 biterr(Without_eq,x)];
+    % ber2=[ber2 biterr(with_eq,x)]
+    ber1(i)=biterr(real(wo_eq),x);
+    ber2(i)=biterr(with_eq,x);
+end
+BER1=ber1/length(x);
+BER2=ber2/length(x);
+semilogy(snr,BER1);hold on;
+semilogy(snr,BER2);hold on;
+legend('with','wtiout')
